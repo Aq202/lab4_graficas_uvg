@@ -59,13 +59,17 @@ std::vector<Fragment> triangle(const Vertex& a, const Vertex& b, const Vertex& c
       if (intensity < 0)
         continue;
 
+      glm::vec3 original = a.original * w + b.original * v + c.original * u;
+
       fragments.push_back(
         Fragment{
           static_cast<uint16_t>(P.x),
           static_cast<uint16_t>(P.y),
           z,
           Color(205, 205, 205),
-          intensity}
+          intensity,
+          original,
+          }
       );
     }
 }

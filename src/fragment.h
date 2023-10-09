@@ -6,6 +6,7 @@
 struct Vertex {
   glm::vec3 position;
   glm::vec3 normal;
+  glm::vec3 original;
 };
 
 struct Fragment {
@@ -13,7 +14,8 @@ struct Fragment {
   uint16_t y;      
   double z;
   Color color; 
-  float intensity; 
+  float intensity;
+  glm::vec3 original; 
 };
 
 struct FragColor {
