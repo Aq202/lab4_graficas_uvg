@@ -110,13 +110,13 @@ int main(int argc, char *argv[])
 
     // iniciar ventana sdl
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow("Spaceship", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    SDL_Window *window = SDL_CreateWindow("Universe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
     std::vector<Face> faces;
-    if (!loadOBJ("../models/esfera.obj", vertices, normals, faces))
+    if (!loadOBJ("../models/sphere.obj", vertices, normals, faces))
     {
         return 0;
     }
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
     // Initialize a Camera object
     Camera camera;
-    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 5.0f);
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 

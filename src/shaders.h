@@ -45,13 +45,13 @@ Fragment fragmentShader(Fragment& fragment) {
 
     glm::vec3 tmpColor = (groundNoise < 0.3) ? oceanColor : groundColor;
 
-    float offset_cloud_x = 7000.0f;
-    float offset_cloud_y = 1500.0f;
-    float zoom_cloud = 300.0f;
+    float offset_cloud_x = 8300.0f;
+    float offset_cloud_y = 3000.0f;
+    float zoom_cloud = 450.0f;
 
     float cloudNoise = noiseGenerator.GetNoise((uv.x + offset_cloud_x) * zoom_cloud, (uv.y + offset_cloud_y) * zoom_cloud);
     
-    if (cloudNoise > 0.7f) {
+    if (cloudNoise > 0.4f) {
         tmpColor = cloudColor;
     }
 
