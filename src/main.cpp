@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     Camera camera;
     camera.cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+    camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 
     float cameraSpeed = 0.1f;
 
