@@ -64,7 +64,7 @@ void render(std::vector<glm::vec3> &vertexes, Uniforms &uniforms)
 
     // vertex shader
     std::vector<Vertex> transformedVertexes;
-    for (int i = 0; i < vertexes.size(); i+=2)
+    for (int i = 0; i < vertexes.size(); i += 2)
     {
         Vertex vertex = {vertexes[i], vertexes[i + 1]};
         Vertex transformedVertex = vertexShader(vertex, uniforms);
@@ -84,14 +84,16 @@ void render(std::vector<glm::vec3> &vertexes, Uniforms &uniforms)
     }
 
     // fragment shader
-    for(Fragment fragment : fragments){
+    for (Fragment fragment : fragments)
+    {
 
-        const Fragment& shadedFragment = fragmentShader(fragment);
+        const Fragment &shadedFragment = fragmentShader(fragment);
         point(shadedFragment);
     }
 }
 
-glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight) {
+glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight)
+{
     glm::mat4 viewport = glm::mat4(1.0f);
 
     // Scale
@@ -135,19 +137,20 @@ int main(int argc, char *argv[])
 
     // Initialize a Camera object
     Camera camera;
-    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 5.0f);
+    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
+    camera.upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    float cameraSpeed = 0.1f;
 
     // Projection matrix
     float fovInDegrees = 45.0f;
-    float aspectRatio =  static_cast<float>(WINDOW_WIDTH) /  static_cast<float>(WINDOW_HEIGHT); 
+    float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
     float nearClip = 0.1f;
     float farClip = 100.0f;
     uniforms.projection = glm::perspective(glm::radians(fovInDegrees), aspectRatio, nearClip, farClip);
 
     uniforms.viewport = createViewportMatrix(WINDOW_WIDTH, WINDOW_HEIGHT);
-
 
     bool running = true;
     SDL_Event event;
@@ -162,20 +165,44 @@ int main(int argc, char *argv[])
             {
                 running = false;
             }
+
+            if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.sym == SDLK_UP)
+                {
+                    // Mover la cámara hacia arriba
+                    camera.targetPosition.y -= cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_DOWN)
+                {
+                    // Mover la cámara hacia abajo
+                    camera.targetPosition.y += cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_LEFT)
+                {
+                    // Mover la cámara hacia la izquierda
+                    camera.targetPosition.x -= cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_RIGHT)
+                {
+                    // Mover la cámara hacia la derecha
+                    camera.targetPosition.x += cameraSpeed;
+                }
+            }
         }
 
         a += 2;
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(a), rotationAxis);
 
         // Calculate the model matrix
-         uniforms.model = translation * rotation * scale;
+        uniforms.model = translation * rotation * scale;
 
         // // Create the view matrix using the Camera object
-         uniforms.view = glm::lookAt(
-             camera.cameraPosition, // The position of the camera
-             camera.targetPosition, // The point the camera is looking at
-             camera.upVector        // The up vector defining the camera's orientation
-         );
+        uniforms.view = glm::lookAt(
+            camera.cameraPosition, // The position of the camera
+            camera.targetPosition, // The point the camera is looking at
+            camera.upVector        // The up vector defining the camera's orientation
+        );
 
         clear();
         render(modelVertex, uniforms);

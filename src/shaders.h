@@ -2,6 +2,7 @@
 #include "fragment.h"
 #include "FastNoiseLite.h"
 #include <SDL2/SDL.h>
+#include "uniforms.h"
 
 Vertex vertexShader(const Vertex vertex, const Uniforms& uniforms) {
      glm::vec4 clipSpaceVertex = uniforms.projection * uniforms.view * uniforms.model * glm::vec4(vertex.position, 1.0f);
@@ -23,7 +24,7 @@ Vertex vertexShader(const Vertex vertex, const Uniforms& uniforms) {
         vertex.position
     };
 }
-
+/*
 Fragment fragmentShader(Fragment& fragment) {
     Color color;
 
@@ -62,3 +63,21 @@ Fragment fragmentShader(Fragment& fragment) {
 
     return fragment;
 }
+*/
+
+Fragment fragmentShader(Fragment& fragment) {
+    Color color;
+    
+    float noise = rand() % 100;
+
+    if(noise < 10 ) color = Color(78,0,0);
+    else if(noise < 30 ) color = Color(251,186,98);
+    else if(noise < 40) color = Color(252,100,0);
+    else if (noise < 50) color = Color(239, 144, 55);
+    else color = Color(207,24,3);
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}
+
