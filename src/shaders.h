@@ -166,7 +166,7 @@ Fragment fragmentShader(Fragment& fragment) {
     return fragment;
 }
 */
-
+/*
 Fragment fragmentShader(Fragment& fragment) {
     Color color = Color(59, 79, 188);
 
@@ -199,3 +199,35 @@ Fragment fragmentShader(Fragment& fragment) {
     return fragment;
 }
 
+*/
+Fragment fragmentShader(Fragment& fragment) {
+    Color color = Color(199, 87, 231);
+
+    // Coordenadas de textura UV
+    glm::vec2 uv = glm::vec2(fragment.original.x, fragment.original.y);
+
+    for(int i = 1; i <= 3; i++){
+
+    
+
+    // Parámetros de ruido
+    float offset_x = 3000 * i;
+    float offset_y = 6000 * i;
+    float zoom = 200.0;
+
+    FastNoiseLite noiseGenerator;
+    noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    // Genera el valor de ruido en función de las coordenadas de textura y el tiempo
+    float noise = noiseGenerator.GetNoise((uv.x + offset_x) * zoom, (uv.y + offset_y) * zoom);
+
+        if(i == 1 && noise > 0.4) color = Color(80, 51, 170);
+        if(i == 2 && noise < 0) color = Color(61, 40, 181);
+        if(i == 3 && noise > 0.4 ) color = Color(153, 54, 222);
+
+    }
+
+    fragment.color = color * fragment.intensity;
+
+    return fragment;
+}
