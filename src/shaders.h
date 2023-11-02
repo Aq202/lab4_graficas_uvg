@@ -200,6 +200,7 @@ Fragment fragmentShader(Fragment& fragment) {
 }
 
 */
+/*
 Fragment fragmentShader(Fragment& fragment) {
     Color color = Color(199, 87, 231);
 
@@ -231,3 +232,4 @@ Fragment fragmentShader(Fragment& fragment) {
 
     return fragment;
 }
+*/

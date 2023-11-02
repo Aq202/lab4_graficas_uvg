@@ -9,6 +9,8 @@
 #include "fragment.h"
 #include "camera.h"
 #include "glm/ext.hpp"
+#include "sun.h"
+#include "earth.h"
 
 void printVertex(glm::vec3 vertex)
 {
@@ -39,71 +41,6 @@ void renderBuffer(SDL_Renderer *renderer)
     SDL_DestroyTexture(texture);
 }
 
-std::vector<std::vector<Vertex>> primitiveAssembly(
-    const std::vector<Vertex> &transformedVertexes)
-{
-    std::vector<std::vector<Vertex>> groupedVertexes;
-
-    for (int i = 0; i < transformedVertexes.size(); i += 3)
-    {
-        std::vector<Vertex> triangle;
-        triangle.push_back(transformedVertexes[i]);
-        triangle.push_back(transformedVertexes[i + 1]);
-        triangle.push_back(transformedVertexes[i + 2]);
-
-        groupedVertexes.push_back(triangle);
-    }
-
-    return groupedVertexes;
-}
-
-float rotation = 0;
-float pi = 3.1416;
-void render(std::vector<glm::vec3> &vertexes, Uniforms &uniforms)
-{
-
-    // vertex shader
-    std::vector<Vertex> transformedVertexes;
-    for (int i = 0; i < vertexes.size(); i += 2)
-    {
-        Vertex vertex = {vertexes[i], vertexes[i + 1]};
-        Vertex transformedVertex = vertexShader(vertex, uniforms);
-        transformedVertexes.push_back(transformedVertex);
-    }
-
-    // primitive assembly
-    std::vector<std::vector<Vertex>> triangles = primitiveAssembly(transformedVertexes);
-
-    // rasterize
-    std::vector<Fragment> fragments;
-    for (std::vector<Vertex> tr : triangles)
-    {
-        std::vector<Fragment> rasterizedTriangle = triangle(tr[0], tr[1], tr[2]);
-
-        fragments.insert(fragments.end(), rasterizedTriangle.begin(), rasterizedTriangle.end());
-    }
-
-    // fragment shader
-    for (Fragment fragment : fragments)
-    {
-
-        const Fragment &shadedFragment = fragmentShader(fragment);
-        point(shadedFragment);
-    }
-}
-
-glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight)
-{
-    glm::mat4 viewport = glm::mat4(1.0f);
-
-    // Scale
-    viewport = glm::scale(viewport, glm::vec3(screenWidth / 2.0f, screenHeight / 2.0f, 0.5f));
-
-    // Translate
-    viewport = glm::translate(viewport, glm::vec3(1.0f, 1.0f, 0.5f));
-
-    return viewport;
-}
 
 Uint32 frameStart, frameTime;
 
@@ -115,42 +52,17 @@ int main(int argc, char *argv[])
     SDL_Window *window = SDL_CreateWindow("Universe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<Face> faces;
-    if (!loadOBJ("../models/sphere.obj", vertices, normals, faces))
-    {
-        return 0;
-    }
-
-    std::vector<glm::vec3> modelVertex = setupVertexArray(vertices, faces, normals);
-
-    Uniforms uniforms;
-
-    glm::vec3 translationVector(0.0f, 0.0f, 0.0f);
-    float a = 45.0f;
-    glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-    glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
-
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), translationVector);
-    glm::mat4 scale = glm::scale(glm::mat4(1.0f), scaleFactor);
 
     // Initialize a Camera object
     Camera camera;
-    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 
+    SunModel sunModel = SunModel(camera);
+    EarthModel earthModel = EarthModel(camera);
+
     float cameraSpeed = 0.1f;
-
-    // Projection matrix
-    float fovInDegrees = 45.0f;
-    float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
-    float nearClip = 0.1f;
-    float farClip = 100.0f;
-    uniforms.projection = glm::perspective(glm::radians(fovInDegrees), aspectRatio, nearClip, farClip);
-
-    uniforms.viewport = createViewportMatrix(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     bool running = true;
     SDL_Event event;
@@ -188,24 +100,27 @@ int main(int argc, char *argv[])
                     // Mover la cámara hacia la derecha
                     camera.targetPosition.x += cameraSpeed;
                 }
+                else if (event.key.keysym.sym == SDLK_w)
+                {
+                    // Acercar camara
+                    camera.cameraPosition.x += cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_s)
+                {
+                    // Alejar camara
+                    camera.cameraPosition.x -= cameraSpeed;
+                }
             }
         }
 
-        a += 2;
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(a), rotationAxis);
-
-        // Calculate the model matrix
-        uniforms.model = translation * rotation * scale;
-
-        // // Create the view matrix using the Camera object
-        uniforms.view = glm::lookAt(
-            camera.cameraPosition, // The position of the camera
-            camera.targetPosition, // The point the camera is looking at
-            camera.upVector        // The up vector defining the camera's orientation
-        );
-
         clear();
-        render(modelVertex, uniforms);
+        
+
+        earthModel.rotateY();
+        earthModel.translate();
+        
+        earthModel.render();
+        sunModel.render();
 
         // Render the framebuffer to the screen
         renderBuffer(renderer);
