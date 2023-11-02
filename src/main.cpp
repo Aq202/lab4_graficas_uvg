@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 
+    SunModel sunModel = SunModel(camera);
     EarthModel earthModel = EarthModel(camera);
     MoonModel moonModel = MoonModel(camera);
 
@@ -118,13 +119,16 @@ int main(int argc, char *argv[])
         
 
         earthModel.rotateY();
+        earthModel.resetTranslation();
+        earthModel.translate();
 
         moonModel.rotateY(3.0f);
         moonModel.setTranslation(earthModel.getTranslation());
-        moonModel.translate();
+        moonModel.translate(15.0f);
         
         earthModel.render();
         moonModel.render();
+        sunModel.render();
 
         // Render the framebuffer to the screen
         renderBuffer(renderer);

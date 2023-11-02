@@ -4,7 +4,7 @@
 class MoonModel : public Model
 {
 public:
-  MoonModel(Camera &camera) : Model("../models/sphere.obj", camera,glm::vec3(0.0f, 0.0f, 0.0f), 0.81f, 3.0f)
+  MoonModel(Camera &camera) : Model("../models/sphere.obj", camera,glm::vec3(0.0f, 0.0f, 0.0f), 0.1f, 0.5f)
   {
   }
 
