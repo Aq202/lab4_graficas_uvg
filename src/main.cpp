@@ -42,7 +42,6 @@ void renderBuffer(SDL_Renderer *renderer)
     SDL_DestroyTexture(texture);
 }
 
-
 Uint32 frameStart, frameTime;
 
 int main(int argc, char *argv[])
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow("Universe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
-
 
     // Initialize a Camera object
     Camera camera;
@@ -64,7 +62,7 @@ int main(int argc, char *argv[])
     EarthModel earthModel = EarthModel(camera);
     MoonModel moonModel = MoonModel(camera);
 
-    float cameraSpeed = 0.1f;
+    float cameraSpeed = 0.5f;
 
     bool running = true;
     SDL_Event event;
@@ -101,22 +99,53 @@ int main(int argc, char *argv[])
                 {
                     // Mover la cámara hacia la derecha
                     camera.targetPosition.x += cameraSpeed;
+                    SDL_Log("%f", camera.targetPosition.x);
                 }
-                else if (event.key.keysym.sym == SDLK_w)
+                else if (event.key.keysym.sym == SDLK_q)
                 {
                     // Acercar camara
                     camera.cameraPosition.x += cameraSpeed;
                 }
-                else if (event.key.keysym.sym == SDLK_s)
+                else if (event.key.keysym.sym == SDLK_a)
                 {
                     // Alejar camara
                     camera.cameraPosition.x -= cameraSpeed;
+                    if (camera.cameraPosition.x < 0)
+                        camera.cameraPosition.x = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_w)
+                {
+                    // Acercar camara
+                    camera.cameraPosition.y += cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_s)
+                {
+                    // Alejar camara
+                    camera.cameraPosition.y -= cameraSpeed;
+                    if (camera.cameraPosition.x < 0)
+                        camera.cameraPosition.x = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_e)
+                {
+                    // Acercar camara
+                    camera.cameraPosition.z += cameraSpeed;
+                }
+                else if (event.key.keysym.sym == SDLK_d)
+                {
+                    // Alejar camara
+                    camera.cameraPosition.z -= cameraSpeed;
+                    if (camera.cameraPosition.x < 0)
+                        camera.cameraPosition.x = 0;
+                }
+                else if (event.key.keysym.sym == SDLK_r)
+                {
+                    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+                    camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
                 }
             }
         }
 
         clear();
-        
 
         earthModel.rotateY();
         earthModel.resetTranslation();
@@ -125,7 +154,7 @@ int main(int argc, char *argv[])
         moonModel.rotateY(3.0f);
         moonModel.setTranslation(earthModel.getTranslation());
         moonModel.translate(15.0f);
-        
+
         earthModel.render();
         moonModel.render();
         sunModel.render();

@@ -13,8 +13,7 @@
 class Model
 {
 public:
-  Model(const char *path, Camera &camera, glm::vec3 initialPosition, float scaleFactor = 1.0f, float radius = 0.0f) :
-   modelPath(path), camera(camera), radius(radius), initialPosition(initialPosition)
+  Model(const char *path, Camera &camera, glm::vec3 initialPosition, float scaleFactor = 1.0f, float radius = 0.0f, bool lightSource = false) : modelPath(path), camera(camera), radius(radius), initialPosition(initialPosition), lightSource(lightSource)
   {
 
     std::vector<glm::vec3> vertices;
@@ -102,7 +101,7 @@ private:
     std::vector<Fragment> fragments;
     for (std::vector<Vertex> tr : triangles)
     {
-      std::vector<Fragment> rasterizedTriangle = triangle(tr[0], tr[1], tr[2]);
+      std::vector<Fragment> rasterizedTriangle = triangle(tr[0], tr[1], tr[2], calculateLightDirection(), lightSource);
 
       fragments.insert(fragments.end(), rasterizedTriangle.begin(), rasterizedTriangle.end());
     }
@@ -114,6 +113,12 @@ private:
       const Fragment &shadedFragment = fragmentShader(fragment);
       point(shadedFragment);
     }
+  }
+
+  glm::vec3 calculateLightDirection()
+  {
+    glm::vec4 direction = translation * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    return -glm::normalize(glm::vec3(direction));
   }
 
   glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight)
@@ -129,18 +134,21 @@ private:
     return viewport;
   }
 
-  public:
-    glm::mat4& getTranslation(){
-      return translation;
-    }
+public:
+  glm::mat4 &getTranslation()
+  {
+    return translation;
+  }
 
-    void setTranslation(glm::mat4& trans){
-      translation = trans;
-    }
+  void setTranslation(glm::mat4 &trans)
+  {
+    translation = trans;
+  }
 
-    void resetTranslation(){
-      translation = glm::mat4(1.0f);
-    }
+  void resetTranslation()
+  {
+    translation = glm::mat4(1.0f);
+  }
 
   virtual Fragment fragmentShader(Fragment &fragment) = 0;
 
@@ -156,4 +164,5 @@ private:
   const float radius;
   float translationAngle = 0.f;
   glm::vec3 initialPosition;
+  bool lightSource;
 };

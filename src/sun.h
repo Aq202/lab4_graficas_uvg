@@ -1,10 +1,12 @@
 #pragma once
 #include "model.h"
+#include <SDL2/SDL.h>
+
 
 class SunModel : public Model
 {
 public:
-  SunModel(Camera &camera) : Model("../models/sphere.obj", camera, glm::vec3(0.0f, 0.0f, 0.0f), 3.0f)
+  SunModel(Camera &camera) : Model("../models/sphere.obj", camera, glm::vec3(0.0f, 0.0f, 0.0f), 3.0f, 0.0f, true)
   {
   }
 
@@ -25,7 +27,7 @@ public:
     else
       color = Color(207, 24, 3);
 
-    fragment.color = color * fragment.intensity;
+    fragment.color = color;
 
     return fragment;
   }

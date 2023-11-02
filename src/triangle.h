@@ -3,25 +3,26 @@
 #include <glm/glm.hpp>
 #include "framebuffer.h"
 
-glm::vec3 L = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 L = glm::vec3(0.0f, 0.0f, 0.0f);
 
-std::pair<float, float> barycentricCoordinates(const glm::ivec2& P, const glm::vec3& A, const glm::vec3& B, const glm::vec3& C) {
-    glm::vec3 bary = glm::cross(
-        glm::vec3(C.x - A.x, B.x - A.x, A.x - P.x),
-        glm::vec3(C.y - A.y, B.y - A.y, A.y - P.y)
-    );
+std::pair<float, float> barycentricCoordinates(const glm::ivec2 &P, const glm::vec3 &A, const glm::vec3 &B, const glm::vec3 &C)
+{
+  glm::vec3 bary = glm::cross(
+      glm::vec3(C.x - A.x, B.x - A.x, A.x - P.x),
+      glm::vec3(C.y - A.y, B.y - A.y, A.y - P.y));
 
-    if (abs(bary.z) < 1) {
-        return std::make_pair(-1, -1);
-    }
+  if (abs(bary.z) < 1)
+  {
+    return std::make_pair(-1, -1);
+  }
 
-    return std::make_pair(
-        bary.y / bary.z,
-        bary.x / bary.z
-    );    
+  return std::make_pair(
+      bary.y / bary.z,
+      bary.x / bary.z);
 }
 
-std::vector<Fragment> triangle(const Vertex& a, const Vertex& b, const Vertex& c) {
+std::vector<Fragment> triangle(const Vertex &a, const Vertex &b, const Vertex &c, const glm::vec3 lightDirection, bool lightSource = false)
+{
   std::vector<Fragment> fragments;
   glm::vec3 A = a.position;
   glm::vec3 B = b.position;
@@ -33,11 +34,13 @@ std::vector<Fragment> triangle(const Vertex& a, const Vertex& b, const Vertex& c
   float maxY = std::max(std::max(A.y, B.y), C.y);
 
   // Iterate over each point in the bounding box
-  for (int y = static_cast<int>(std::ceil(minY)); y <= static_cast<int>(std::floor(maxY)); ++y) {
-    for (int x = static_cast<int>(std::ceil(minX)); x <= static_cast<int>(std::floor(maxX)); ++x) {
+  for (int y = static_cast<int>(std::ceil(minY)); y <= static_cast<int>(std::floor(maxY)); ++y)
+  {
+    for (int x = static_cast<int>(std::ceil(minX)); x <= static_cast<int>(std::floor(maxX)); ++x)
+    {
       if (x < 0 || y < 0 || y > WINDOW_HEIGHT || x > WINDOW_WIDTH)
         continue;
-        
+
       glm::ivec2 P(x, y);
       auto barycentric = barycentricCoordinates(P, A, B, C);
       float w = 1 - barycentric.first - barycentric.second;
@@ -47,31 +50,32 @@ std::vector<Fragment> triangle(const Vertex& a, const Vertex& b, const Vertex& c
 
       if (w < epsilon || v < epsilon || u < epsilon)
         continue;
-          
+
       double z = A.z * w + B.z * v + C.z * u;
-      
-       glm::vec3 normal = glm::normalize( 
-           a.normal * w + b.normal * v + c.normal * u
-       ); 
-      // glm::vec3 normal = a.normal; // assume flatness
-      float intensity = glm::dot(normal, L);
-      
-      if (intensity < 0)
-        continue;
+
+      glm::vec3 normal = glm::normalize(
+          a.normal * w + b.normal * v + c.normal * u);
+
+      float intensity = 0;
+      if (!lightSource)
+      {
+        intensity = glm::dot(normal, lightDirection);
+
+        if (intensity < 0) intensity = 0;
+      }
 
       glm::vec3 original = a.original * w + b.original * v + c.original * u;
 
       fragments.push_back(
-        Fragment{
-          static_cast<uint16_t>(P.x),
-          static_cast<uint16_t>(P.y),
-          z,
-          Color(205, 205, 205),
-          intensity,
-          original,
-          }
-      );
+          Fragment{
+              static_cast<uint16_t>(P.x),
+              static_cast<uint16_t>(P.y),
+              z,
+              Color(205, 205, 205),
+              intensity,
+              original,
+          });
     }
-}
+  }
   return fragments;
 }
