@@ -13,7 +13,7 @@
 class Model
 {
 public:
-  Model(const char *path, Camera &camera, glm::vec3 initialPosition, float radius = 0.0f) :
+  Model(const char *path, Camera &camera, glm::vec3 initialPosition, float scaleFactor = 1.0f, float radius = 0.0f) :
    modelPath(path), camera(camera), radius(radius), initialPosition(initialPosition)
   {
 
@@ -29,10 +29,9 @@ public:
 
     float a = 45.0f;
     rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
-    glm::vec3 scaleFactor(1.0f, 1.0f, 1.0f);
 
-    translation = glm::translate(glm::mat4(1.0f), initialPosition);
-    scale = glm::scale(glm::mat4(1.0f), scaleFactor);
+    translation = glm::translate(translation, initialPosition);
+    scale = glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor, scaleFactor, scaleFactor));
 
     // Projection matrix
     float fovInDegrees = 45.0f;
@@ -76,11 +75,11 @@ public:
     translationAngle += glm::radians(degree);
 
     // Calcula la nueva posición en coordenadas polares
-    float x = initialPosition.x + radius * std::sin(translationAngle);
-    float z = initialPosition.z + radius * std::cos(translationAngle);
+    float x = radius * std::sin(translationAngle);
+    float z = radius * std::cos(translationAngle);
 
     // Actualiza la matriz de traslación
-    translation = glm::translate(glm::mat4(1.0f), glm::vec3(x, initialPosition.y, z));
+    translation = glm::translate(translation, glm::vec3(x, 0.0f, z));
   }
 
 private:
@@ -130,6 +129,19 @@ private:
     return viewport;
   }
 
+  public:
+    glm::mat4& getTranslation(){
+      return translation;
+    }
+
+    void setTranslation(glm::mat4& trans){
+      translation = trans;
+    }
+
+    void resetTranslation(){
+      translation = glm::mat4(1.0f);
+    }
+
   virtual Fragment fragmentShader(Fragment &fragment) = 0;
 
 private:
@@ -139,7 +151,7 @@ private:
   Uniforms uniforms;
   Camera &camera;
   glm::vec3 rotationAxis;
-  glm::mat4 translation;
+  glm::mat4 translation = glm::mat4(1.0f);
   glm::mat4 scale;
   const float radius;
   float translationAngle = 0.f;

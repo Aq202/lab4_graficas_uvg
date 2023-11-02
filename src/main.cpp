@@ -11,6 +11,7 @@
 #include "glm/ext.hpp"
 #include "sun.h"
 #include "earth.h"
+#include "moon.h"
 
 void printVertex(glm::vec3 vertex)
 {
@@ -59,8 +60,8 @@ int main(int argc, char *argv[])
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 
-    SunModel sunModel = SunModel(camera);
     EarthModel earthModel = EarthModel(camera);
+    MoonModel moonModel = MoonModel(camera);
 
     float cameraSpeed = 0.1f;
 
@@ -117,10 +118,13 @@ int main(int argc, char *argv[])
         
 
         earthModel.rotateY();
-        earthModel.translate();
+
+        moonModel.rotateY(3.0f);
+        moonModel.setTranslation(earthModel.getTranslation());
+        moonModel.translate();
         
         earthModel.render();
-        sunModel.render();
+        moonModel.render();
 
         // Render the framebuffer to the screen
         renderBuffer(renderer);
