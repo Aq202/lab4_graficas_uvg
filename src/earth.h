@@ -4,7 +4,7 @@
 class EarthModel : public Model
 {
 public:
-  EarthModel(Camera &camera) : Model("../models/sphere.obj", camera, glm::vec3(0.0f, 0.0f, 0.0f), 0.5f, 5.0f)
+  EarthModel(Camera &camera) : Model("../models/sphere.obj", camera, 0.5f, 5.0f)
   {
   }
 

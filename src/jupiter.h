@@ -4,7 +4,7 @@
 class JupiterModel : public Model
 {
 public:
-  JupiterModel(Camera &camera) : Model("../models/sphere.obj", camera, glm::vec3(0.0f, 0.0f, 0.0f))
+  JupiterModel(Camera &camera) : Model("../models/sphere.obj", camera, 1.0f, 10.0f)
   {
   }
 

@@ -12,6 +12,9 @@
 #include "sun.h"
 #include "earth.h"
 #include "moon.h"
+#include "jupiter.h"
+#include "planetRandom.h"
+#include "planetRandom2.h"
 
 void printVertex(glm::vec3 vertex)
 {
@@ -54,13 +57,16 @@ int main(int argc, char *argv[])
 
     // Initialize a Camera object
     Camera camera;
-    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 50.0f);
     camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.upVector = glm::vec3(0.0f, -1.0f, 0.0f);
 
     SunModel sunModel = SunModel(camera);
     EarthModel earthModel = EarthModel(camera);
     MoonModel moonModel = MoonModel(camera);
+    JupiterModel jupiterModel = JupiterModel(camera);
+    PlanetRandomModel planetRandomModel = PlanetRandomModel(camera);
+    PlanetRandom2Model planetRandom2Model = PlanetRandom2Model(camera);
 
     float cameraSpeed = 0.5f;
 
@@ -148,16 +154,27 @@ int main(int argc, char *argv[])
         clear();
 
         earthModel.rotateY();
-        earthModel.resetTranslation();
         earthModel.translate();
 
         moonModel.rotateY(3.0f);
-        moonModel.setTranslation(earthModel.getTranslation());
+        moonModel.setPosition(earthModel.getCurrentPosition());
         moonModel.translate(15.0f);
+
+        jupiterModel.rotateY();
+        jupiterModel.translate(1.0f);
+
+        planetRandomModel.rotateY();
+        planetRandomModel.translate(2.5f);
+
+        planetRandom2Model.rotateY();
+        planetRandom2Model.translate(2.0f);
 
         earthModel.render();
         moonModel.render();
         sunModel.render();
+        jupiterModel.render();
+        planetRandomModel.render();
+        planetRandom2Model.render();
 
         // Render the framebuffer to the screen
         renderBuffer(renderer);

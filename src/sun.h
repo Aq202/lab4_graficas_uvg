@@ -6,7 +6,7 @@
 class SunModel : public Model
 {
 public:
-  SunModel(Camera &camera) : Model("../models/sphere.obj", camera, glm::vec3(0.0f, 0.0f, 0.0f), 3.0f, 0.0f, true)
+  SunModel(Camera &camera) : Model("../models/sphere.obj", camera, 3.0f, 0.0f, true)
   {
   }
 

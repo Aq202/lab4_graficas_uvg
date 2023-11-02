@@ -13,7 +13,8 @@
 class Model
 {
 public:
-  Model(const char *path, Camera &camera, glm::vec3 initialPosition, float scaleFactor = 1.0f, float radius = 0.0f, bool lightSource = false) : modelPath(path), camera(camera), radius(radius), initialPosition(initialPosition), lightSource(lightSource)
+  Model(const char *path, Camera &camera, float scaleFactor = 1.0f, float radius = 0.0f, bool lightSource = false) :
+   modelPath(path), camera(camera), radius(radius),lightSource(lightSource)
   {
 
     std::vector<glm::vec3> vertices;
@@ -29,7 +30,7 @@ public:
     float a = 45.0f;
     rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f); // Rotate around the Y-axis
 
-    translation = glm::translate(translation, initialPosition);
+    translation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
     scale = glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor, scaleFactor, scaleFactor));
 
     // Projection matrix
@@ -74,11 +75,11 @@ public:
     translationAngle += glm::radians(degree);
 
     // Calcula la nueva posición en coordenadas polares
-    float x = radius * std::sin(translationAngle);
-    float z = radius * std::cos(translationAngle);
+    float x = initialPosition.x + radius * std::sin(translationAngle);
+    float z = initialPosition.z + radius * std::cos(translationAngle);
 
     // Actualiza la matriz de traslación
-    translation = glm::translate(translation, glm::vec3(x, 0.0f, z));
+    translation = glm::translate(glm::mat4(1.0f), glm::vec3(x, initialPosition.y, z));
   }
 
 private:
@@ -115,10 +116,11 @@ private:
     }
   }
 
+  
+
   glm::vec3 calculateLightDirection()
   {
-    glm::vec4 direction = translation * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    return -glm::normalize(glm::vec3(direction));
+    return -glm::normalize(getCurrentPosition());
   }
 
   glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight)
@@ -135,20 +137,17 @@ private:
   }
 
 public:
-  glm::mat4 &getTranslation()
+  glm::vec3 getCurrentPosition()
   {
-    return translation;
+    glm::vec4 direction = translation * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    return glm::vec3(direction);
   }
 
-  void setTranslation(glm::mat4 &trans)
+  void setPosition(glm::vec3 pos)
   {
-    translation = trans;
+    initialPosition = pos;
   }
 
-  void resetTranslation()
-  {
-    translation = glm::mat4(1.0f);
-  }
 
   virtual Fragment fragmentShader(Fragment &fragment) = 0;
 
@@ -163,6 +162,6 @@ private:
   glm::mat4 scale;
   const float radius;
   float translationAngle = 0.f;
-  glm::vec3 initialPosition;
+  glm::vec3 initialPosition = glm::vec3(0.0f);
   bool lightSource;
 };
