@@ -4,7 +4,7 @@
 class MoonModel : public Model
 {
 public:
-  MoonModel(Camera &camera) : Model("../models/sphere.obj", camera, 0.1f, 0.5f)
+  MoonModel(Camera &camera) : Model("../models/sphere.obj", camera, 0.2f, 1.0f)
   {
   }
 

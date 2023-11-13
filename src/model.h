@@ -20,7 +20,7 @@ public:
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
     std::vector<Face> faces;
-    if (!loadOBJ("../models/sphere.obj", vertices, normals, faces))
+    if (!loadOBJ(path, vertices, normals, faces))
     {
       return;
     }
@@ -49,10 +49,18 @@ public:
     yRotation += degree;
   }
 
+  float getRotationY(){
+    return yRotation;
+  }
+  void setRotationY(const float degree){
+    yRotation = degree;
+  }
+
+
 public:
-  void render()
+  virtual void render()
   {
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(yRotation), rotationAxis);
+    rotation = glm::rotate(glm::mat4(1.0f), glm::radians(yRotation), rotationAxis);
     // Calculate the model matrix
     uniforms.model = translation * rotation * scale;
 
@@ -80,6 +88,11 @@ public:
 
     // Actualiza la matriz de traslación
     translation = glm::translate(glm::mat4(1.0f), glm::vec3(x, initialPosition.y, z));
+  }
+
+  virtual glm::vec3 calculateLightDirection()
+  {
+    return -glm::normalize(getCurrentPosition());
   }
 
 private:
@@ -115,13 +128,7 @@ private:
       point(shadedFragment);
     }
   }
-
   
-
-  glm::vec3 calculateLightDirection()
-  {
-    return -glm::normalize(getCurrentPosition());
-  }
 
   glm::mat4 createViewportMatrix(size_t screenWidth, size_t screenHeight)
   {
@@ -143,22 +150,36 @@ public:
     return glm::vec3(direction);
   }
 
+  Uniforms getUniforms(){
+    return uniforms;
+  }
+
+  float getRadius(){
+    return radius;
+  }
+
   void setPosition(glm::vec3 pos)
   {
     initialPosition = pos;
   }
 
+  void setTranslation(glm::vec3 pos){
+    translation = glm::translate(glm::mat4(1.0f), pos);
+  }
 
-  virtual Fragment fragmentShader(Fragment &fragment) = 0;
+  virtual Fragment fragmentShader(Fragment &fragment){
+    return fragment;
+  }
 
 private:
   const char *modelPath;
-  float yRotation = 45.0f;
+  float yRotation = 0.0f;
   std::vector<glm::vec3> modelVertex;
   Uniforms uniforms;
   Camera &camera;
   glm::vec3 rotationAxis;
   glm::mat4 translation = glm::mat4(1.0f);
+  glm::mat4 rotation;
   glm::mat4 scale;
   const float radius;
   float translationAngle = 0.f;

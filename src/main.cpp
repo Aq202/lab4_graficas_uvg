@@ -15,6 +15,7 @@
 #include "jupiter.h"
 #include "planetRandom.h"
 #include "planetRandom2.h"
+#include "spaceship.h"
 
 void printVertex(glm::vec3 vertex)
 {
@@ -68,7 +69,10 @@ int main(int argc, char *argv[])
     PlanetRandomModel planetRandomModel = PlanetRandomModel(camera);
     PlanetRandom2Model planetRandom2Model = PlanetRandom2Model(camera);
 
-    float cameraSpeed = 0.5f;
+    SpaceshipModel spaceship = SpaceshipModel(camera);
+    spaceship.setTranslation(glm::vec3(0.0f ,0.0f,25.0f));
+
+    float cameraSpeed = 2.0f;
 
     bool running = true;
     SDL_Event event;
@@ -76,6 +80,7 @@ int main(int argc, char *argv[])
     while (running)
     {
         frameStart = SDL_GetTicks();
+        Model* selectedModel = NULL;
 
         while (SDL_PollEvent(&event))
         {
@@ -88,66 +93,49 @@ int main(int argc, char *argv[])
             {
                 if (event.key.keysym.sym == SDLK_UP)
                 {
-                    // Mover la cámara hacia arriba
-                    camera.targetPosition.y -= cameraSpeed;
+                    spaceship.forward(-2.0f);
                 }
                 else if (event.key.keysym.sym == SDLK_DOWN)
                 {
-                    // Mover la cámara hacia abajo
-                    camera.targetPosition.y += cameraSpeed;
+                spaceship.forward(2.0f);
+
                 }
                 else if (event.key.keysym.sym == SDLK_LEFT)
                 {
-                    // Mover la cámara hacia la izquierda
-                    camera.targetPosition.x -= cameraSpeed;
+                    spaceship.rotateY(-5.0f); 
+
                 }
                 else if (event.key.keysym.sym == SDLK_RIGHT)
                 {
-                    // Mover la cámara hacia la derecha
-                    camera.targetPosition.x += cameraSpeed;
-                    SDL_Log("%f", camera.targetPosition.x);
-                }
-                else if (event.key.keysym.sym == SDLK_q)
-                {
-                    // Acercar camara
-                    camera.cameraPosition.x += cameraSpeed;
-                }
-                else if (event.key.keysym.sym == SDLK_a)
-                {
-                    // Alejar camara
-                    camera.cameraPosition.x -= cameraSpeed;
-                    if (camera.cameraPosition.x < 0)
-                        camera.cameraPosition.x = 0;
+                    spaceship.rotateY(5.0f);                    
                 }
                 else if (event.key.keysym.sym == SDLK_w)
                 {
-                    // Acercar camara
-                    camera.cameraPosition.y += cameraSpeed;
+                    spaceship.up(2.0f);
                 }
                 else if (event.key.keysym.sym == SDLK_s)
                 {
-                    // Alejar camara
-                    camera.cameraPosition.y -= cameraSpeed;
-                    if (camera.cameraPosition.x < 0)
-                        camera.cameraPosition.x = 0;
+                    spaceship.up(-2.0f);
+
                 }
-                else if (event.key.keysym.sym == SDLK_e)
-                {
-                    // Acercar camara
-                    camera.cameraPosition.z += cameraSpeed;
+                else if (event.key.keysym.sym == SDLK_t){
+                    selectedModel = &earthModel;
                 }
-                else if (event.key.keysym.sym == SDLK_d)
-                {
-                    // Alejar camara
-                    camera.cameraPosition.z -= cameraSpeed;
-                    if (camera.cameraPosition.x < 0)
-                        camera.cameraPosition.x = 0;
+                else if (event.key.keysym.sym == SDLK_j){
+                    selectedModel = &jupiterModel;
                 }
-                else if (event.key.keysym.sym == SDLK_r)
-                {
-                    camera.cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
-                    camera.targetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+                else if (event.key.keysym.sym == SDLK_y){
+                    selectedModel = &planetRandomModel;
                 }
+                else if (event.key.keysym.sym == SDLK_u){
+                    selectedModel = &planetRandom2Model;
+                }
+                else if (event.key.keysym.sym == SDLK_r){
+                    spaceship.setTranslation(glm::vec3(0.0f, 0.0f, 25.0f ));
+                    spaceship.setRotationY(180.0f);
+                }
+                
+               
             }
         }
 
@@ -169,12 +157,22 @@ int main(int argc, char *argv[])
         planetRandom2Model.rotateY();
         planetRandom2Model.translate(2.0f);
 
+        if(selectedModel != NULL){
+            glm::vec3 gap = glm::vec3(-1.0f, 0.0f, 1.0f);
+            spaceship.setTranslation(selectedModel->getCurrentPosition() + gap);
+        }
+
+        camera.targetPosition = spaceship.getCurrentPosition();
+        camera.cameraPosition =  spaceship.getCurrentPosition() + glm::vec3(0.0f, 0.0f, 10.0f);
+
+
         earthModel.render();
         moonModel.render();
         sunModel.render();
         jupiterModel.render();
         planetRandomModel.render();
         planetRandom2Model.render();
+        spaceship.render();
 
         // Render the framebuffer to the screen
         renderBuffer(renderer);

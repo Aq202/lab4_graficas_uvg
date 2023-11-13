@@ -4,7 +4,7 @@
 class PlanetRandomModel : public Model
 {
 public:
-  PlanetRandomModel(Camera &camera) : Model("../models/sphere.obj", camera, 0.5f, 12.0f)
+  PlanetRandomModel(Camera &camera) : Model("../models/sphere.obj", camera, 0.5f, 27.0f)
   {
   }
 
@@ -44,4 +44,10 @@ public:
 
     return fragment;
 }
+
+void render() override{
+    Model::render();
+    Orbit orbit = Orbit(getUniforms(), getRadius(), Color(0.0f,  255.0f, 0.0f));
+    orbit.render();
+  }
 };

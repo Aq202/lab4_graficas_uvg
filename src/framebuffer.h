@@ -14,11 +14,15 @@ std::array<float, FRAMEBUFFER_SIZE> zbuffer;
 
 
 Color clearColor = {0, 0, 0};
+Color starColor = {255,255,255};
 
 
 void clear() {
+    std::srand(1);   
     for (int i = 0; i < FRAMEBUFFER_SIZE; i++) {
-        framebuffer[i] = clearColor;
+        int random = std::rand() % 1000;
+        
+        framebuffer[i] = random > 5 ? clearColor : starColor;
     }
     std::fill(zbuffer.begin(), zbuffer.end(), 99999.0f);
 }
@@ -28,7 +32,7 @@ void point(Fragment f)
     int index = f.y * FRAMEBUFFER_WIDTH + f.x;
 
     // Verificar si el índice está dentro de la pantalla
-    if (f.z < zbuffer[index] && index >= 0 && index < FRAMEBUFFER_SIZE)
+    if (index >= 0 && index < FRAMEBUFFER_SIZE && f.z < zbuffer[index])
     {
         // Colocar color del pixel (x,y)
         framebuffer[index] = f.color;

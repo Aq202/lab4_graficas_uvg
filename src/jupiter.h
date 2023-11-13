@@ -4,7 +4,7 @@
 class JupiterModel : public Model
 {
 public:
-  JupiterModel(Camera &camera) : Model("../models/sphere.obj", camera, 1.0f, 10.0f)
+  JupiterModel(Camera &camera) : Model("../models/sphere.obj", camera, 1.5f, 35.0f)
   {
   }
 
@@ -48,4 +48,10 @@ public:
 
     return fragment;
 }
+
+ void render() override{
+    Model::render();
+    Orbit orbit = Orbit(getUniforms(), getRadius(), Color(0.0f,  255.0f, 0.0f));
+    orbit.render();
+  }
 };
