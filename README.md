@@ -6,6 +6,8 @@ Esta simulación incluye diferentes cuerpos celestes, tales como estrellas, plan
 
 ## Resultado final
 
+https://github.com/Aq202/lab4_graficas_uvg/assets/67699784/da56e31b-d4cd-499d-ae38-e12874ced6c2
+
 ## Cuerpos celestes
 
 | ![Resultado final](result/sol.png) | ![Resultado final](result/luna.gif) |
