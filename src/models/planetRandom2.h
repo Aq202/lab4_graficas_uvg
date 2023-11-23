@@ -1,5 +1,5 @@
 #pragma once
-#include "model.h"
+#include "../model.h"
 
 class PlanetRandom2Model : public Model
 {

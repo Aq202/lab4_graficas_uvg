@@ -9,6 +9,7 @@
 #include "triangle.h"
 #include "primitiveAssembly.h"
 #include <cmath>
+#include "orbit.h"
 
 class Model
 {
@@ -71,6 +72,7 @@ public:
     );
 
     renderPipeline();
+    
   }
 
 public:

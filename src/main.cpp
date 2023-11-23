@@ -9,13 +9,13 @@
 #include "fragment.h"
 #include "camera.h"
 #include "glm/ext.hpp"
-#include "sun.h"
-#include "earth.h"
-#include "moon.h"
-#include "jupiter.h"
-#include "planetRandom.h"
-#include "planetRandom2.h"
-#include "spaceship.h"
+#include "./models/sun.h"
+#include "./models/earth.h"
+#include "./models/moon.h"
+#include "./models/jupiter.h"
+#include "./models/planetRandom.h"
+#include "./models/planetRandom2.h"
+#include "./models/spaceship.h"
 
 void printVertex(glm::vec3 vertex)
 {

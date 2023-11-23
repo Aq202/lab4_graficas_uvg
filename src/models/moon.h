@@ -1,5 +1,5 @@
 #pragma once
-#include "model.h"
+#include "../model.h"
 
 class MoonModel : public Model
 {

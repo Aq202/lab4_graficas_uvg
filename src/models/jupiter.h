@@ -1,5 +1,5 @@
 #pragma once
-#include "model.h"
+#include "../model.h"
 
 class JupiterModel : public Model
 {
@@ -49,9 +49,10 @@ public:
     return fragment;
 }
 
- void render() override{
+void render() override{
     Model::render();
-    Orbit orbit = Orbit(getUniforms(), getRadius(), Color(0.0f,  255.0f, 0.0f));
+    Orbit orbit = Orbit(getUniforms(), getRadius(), Color(0.0f, 255.0f, 0.0f));
     orbit.render();
   }
+
 };
